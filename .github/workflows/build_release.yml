@@ -3,7 +3,7 @@ name: Build Release
 on:
   push:
     tags:
-      - '*.*.*-*-apache'
+      - '*-apache'
 
 jobs:
   build:
@@ -69,6 +69,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository }}/limesurvey:${{ steps.tag_version.outputs.tag_version }}
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}/limesurvey:cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}/limesurvey:cache,mode=max
+          tags: ghcr.io/${{ github.repository }}:${{ steps.tag_version.outputs.tag_version }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max
