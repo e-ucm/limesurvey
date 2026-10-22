@@ -250,13 +250,13 @@ if cmp -s "$WORK_DIR/original.php" "$WORK_DIR/modified.php"; then
   exit 1
 fi
 
-# Remove the extra line added by the patch
-sed -i '/^@@ -[0-9]*,[0-9]* +[0-9]*,[0-9]* @@/d' "$OUTPUT_PATCH"
-
 diff -u \
   --label "${TARGET_REL}.orig" \
   --label "$TARGET_REL" \
   "$WORK_DIR/original.php" \
   "$WORK_DIR/modified.php" > "$OUTPUT_PATCH" || true
+
+# Remove the extra line added by the patch
+sed -i '/^@@ -[0-9]*,[0-9]* +[0-9]*,[0-9]* @@/d' "$OUTPUT_PATCH"
 
 echo "Generated patch: $OUTPUT_PATCH"

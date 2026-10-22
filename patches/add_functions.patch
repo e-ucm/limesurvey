@@ -1,6 +1,5 @@
 --- application/helpers/remotecontrol/remotecontrol_handle.php.orig
 +++ application/helpers/remotecontrol/remotecontrol_handle.php
-@@ -60,6 +60,196 @@
      {
          $this->controller = $controller;
      }
