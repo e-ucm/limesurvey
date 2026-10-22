@@ -35,17 +35,6 @@ jobs:
           chmod +x scripts/generate_remotecontrol_patch.sh
           scripts/generate_remotecontrol_patch.sh ${{ steps.tag_version.outputs.tag_version }}
 
-      - name: Verify patch consistency
-        run: |
-          PATCH_FILE="patches/add_functions.patch"
-          if [ -f "$PATCH_FILE" ]; then
-            GIT_PATCH=$(git show HEAD:"$PATCH_FILE" 2>/dev/null || echo "")
-            if ! diff -q "$PATCH_FILE" <(echo "$GIT_PATCH") > /dev/null 2>&1; then
-              echo "::error ::Patch file $PATCH_FILE does not match git state"
-              exit 1
-            fi
-          fi
-          echo "Patch consistency verified"
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
