@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-IMAGE="martialblog/limesurvey:${1:-DOCKER_LIMESURVEY_VERSION}"
+IMAGE="martialblog/limesurvey:${DOCKER_LIMESURVEY_VERSION:-7.5.1-261021-apache}"
 OUTPUT_PATCH="${2:-$(cd "$(dirname "$0")/.." && pwd)/patches/add_functions.patch}"
 TARGET_REL="application/helpers/remotecontrol/remotecontrol_handle.php"
 TARGET_IN_CONTAINER="/var/www/html/${TARGET_REL}"

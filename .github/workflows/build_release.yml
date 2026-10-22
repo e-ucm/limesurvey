@@ -33,7 +33,8 @@ jobs:
       - name: Trigger generate_remotecontrol_patch
         run: |
           chmod +x scripts/generate_remotecontrol_patch.sh
-          scripts/generate_remotecontrol_patch.sh ${{ steps.tag_version.outputs.tag_version }}
+          export DOCKER_LIMESURVEY_VERSION="${{ steps.tag_version.outputs.tag_version }}"
+          scripts/generate_remotecontrol_patch.sh
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
