@@ -1,4 +1,6 @@
-FROM martialblog/limesurvey:6-apache
+ARG DOCKER_LIMESURVEY_VERSION
+
+FROM martialblog/limesurvey:${DOCKER_LIMESURVEY_VERSION}
 
 COPY patches /patches
 

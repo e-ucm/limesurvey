@@ -1,0 +1,61 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - '*-apache'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Read tag version
+        id: tag_version
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/}
+          echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check tag exists on Docker Hub
+        run: |
+          TAG=${GITHUB_REF#refs/tags/}
+          if ! curl -s -H "Accept: application/vnd.docker.distribution.v2.2.schema2+json" "https://registry.hub.docker.com/v2/repositories/martialblog/limesurvey/tags?name=$TAG" | grep -q "tag"; then
+            echo "::error ::Tag $TAG does not exist on Docker Hub"
+            exit 1
+          fi
+          echo "Tag $TAG exists on Docker Hub"
+
+      - name: Trigger generate_remotecontrol_patch
+        run: |
+          chmod +x scripts/generate_remotecontrol_patch.sh
+          export DOCKER_LIMESURVEY_VERSION="${{ steps.tag_version.outputs.tag_version }}"
+          scripts/generate_remotecontrol_patch.sh
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ghcr.io/${{ github.repository }}:${{ steps.tag_version.outputs.tag_version }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max
+          build-args: |
+            DOCKER_LIMESURVEY_VERSION=${{ steps.tag_version.outputs.tag_version }}
