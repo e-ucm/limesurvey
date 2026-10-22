@@ -1,4 +1,4 @@
-FROM martialblog/limesurvey:7.5.1-261021-apache
+FROM martialblog/limesurvey:${DOCKER_LIMESURVEY_VERSION}
 
 COPY patches /patches
 

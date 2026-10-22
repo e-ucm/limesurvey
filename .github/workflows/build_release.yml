@@ -15,30 +15,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Read Dockerfile version
-        id: dockerfile_version
-        run: |
-          DOCKERFILE_VERSION=$(grep -oP 'FROM martialblog/limesurvey:\K[^ ]+' Dockerfile)
-          echo "dockerfile_version=$DOCKERFILE_VERSION" >> $GITHUB_OUTPUT
-
       - name: Read tag version
         id: tag_version
         run: |
           TAG_VERSION=${GITHUB_REF#refs/tags/}
           echo "tag_version=$TAG_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Verify version match
+      - name: Check tag exists on Docker Hub
         run: |
-          if [ "${{ steps.dockerfile_version.outputs.dockerfile_version }}" != "${{ steps.tag_version.outputs.tag_version }}" ]; then
-            echo "::error ::Dockerfile version (${{ steps.dockerfile_version.outputs.dockerfile_version }}) does not match tag version (${{ steps.tag_version.outputs.tag_version }})"
+          TAG=${GITHUB_REF#refs/tags/}
+          if ! curl -s -H "Accept: application/vnd.docker.distribution.v2.2.schema2+json" "https://registry.hub.docker.com/v2/repositories/martialblog/limesurvey/tags?name=$TAG" | grep -q "tag"; then
+            echo "::error ::Tag $TAG does not exist on Docker Hub"
             exit 1
           fi
-          echo "Versions match: ${{ steps.dockerfile_version.outputs.dockerfile_version }}"
+          echo "Tag $TAG exists on Docker Hub"
 
       - name: Trigger generate_remotecontrol_patch
         run: |
           chmod +x scripts/generate_remotecontrol_patch.sh
-          scripts/generate_remotecontrol_patch.sh
+          scripts/generate_remotecontrol_patch.sh ${{ steps.tag_version.outputs.tag_version }}
 
       - name: Verify patch consistency
         run: |
