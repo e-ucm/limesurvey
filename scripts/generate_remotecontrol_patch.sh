@@ -256,7 +256,4 @@ diff -u \
   "$WORK_DIR/original.php" \
   "$WORK_DIR/modified.php" > "$OUTPUT_PATCH" || true
 
-# Remove the extra line added by the patch
-sed -i '/^@@ -[0-9]*,[0-9]* +[0-9]*,[0-9]* @@/d' "$OUTPUT_PATCH"
-
 echo "Generated patch: $OUTPUT_PATCH"
