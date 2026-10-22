@@ -56,3 +56,5 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ steps.tag_version.outputs.tag_version }}
           cache-from: type=registry,ref=ghcr.io/${{ github.repository }}:cache
           cache-to: type=registry,ref=ghcr.io/${{ github.repository }}:cache,mode=max
+          build-args: |
+            DOCKER_LIMESURVEY_VERSION=${{ steps.tag_version.outputs.tag_version }}
